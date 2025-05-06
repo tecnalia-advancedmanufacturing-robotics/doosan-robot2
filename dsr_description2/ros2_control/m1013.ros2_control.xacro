@@ -12,6 +12,7 @@
   model:=m1013
   gripper:=none
   mobile:=none
+  rt_host:=192.168.137.50
   ">
 
     <ros2_control name="${name}" type="system">
@@ -28,6 +29,7 @@
         <param name="model">${model}</param>
         <param name="gripper">${gripper}</param>
         <param name="mobile">${mobile}</param>
+        <param name="rt_host">${rt_host}</param>
       </hardware>
 
       <joint name="joint_1">

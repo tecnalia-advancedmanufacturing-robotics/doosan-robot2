@@ -59,71 +59,6 @@ void* get_s_node_(){
 auto startTime = steady_clock::now(); // 프로그램 시작 시간 기록
 bool init_check = true;
 
-void threadFunction() {
-    s_node_ = rclcpp::Node::make_shared("dsr_hw_interface2");
-    
-    std::string param_name = std::string(s_node_->get_namespace()) + "_parameters.yaml";
-    std::string package_directory = ament_index_cpp::get_package_share_directory("dsr_hardware2");
-    std::string yaml_file_path = package_directory + "/config" + param_name;
-
-    std::ifstream fin(yaml_file_path);
-    if (!fin) {
-        RCLCPP_ERROR(s_node_->get_logger(), "Failed to open YAML file: %s", yaml_file_path.c_str());
-        return;
-    }
-
-    // YAML 파일 파싱
-    YAML::Node yaml_node = YAML::Load(fin);
-    fin.close();
-    
-    // 파싱된 YAML 노드에서 파라미터 읽기
-    if (yaml_node["name"]) {
-        m_name = yaml_node["name"].as<std::string>();
-        RCLCPP_INFO(s_node_->get_logger(), "name: %s", m_name.c_str());
-    }
-    if (yaml_node["rate"]) {
-        m_rate = yaml_node["rate"].as<int>();
-        RCLCPP_INFO(s_node_->get_logger(), "rate: %d", m_rate);
-    }
-    if (yaml_node["standby"]) {
-        m_standby = yaml_node["standby"].as<int>();
-        RCLCPP_INFO(s_node_->get_logger(), "standby: %d", m_standby);
-    }
-    if (yaml_node["command"]) {
-        m_command = yaml_node["command"].as<bool>();
-        RCLCPP_INFO(s_node_->get_logger(), "command: %s", m_command ? "true" : "false");
-    }
-    if (yaml_node["host"]) {
-        m_host = yaml_node["host"].as<std::string>();
-        RCLCPP_INFO(s_node_->get_logger(), "host: %s", m_host.c_str());
-    }
-    if (yaml_node["port"]) {
-        m_port = yaml_node["port"].as<int>();
-        RCLCPP_INFO(s_node_->get_logger(), "port: %d", m_port);
-    }
-    if (yaml_node["mode"]) {
-        m_mode = yaml_node["mode"].as<std::string>();
-        RCLCPP_INFO(s_node_->get_logger(), "mode: %s", m_mode.c_str());
-    }
-    if (yaml_node["model"]) {
-        m_model = yaml_node["model"].as<std::string>();
-        RCLCPP_INFO(s_node_->get_logger(), "model: %s", m_model.c_str());
-    }
-    if (yaml_node["gripper"]) {
-        m_gripper = yaml_node["gripper"].as<std::string>();
-        RCLCPP_INFO(s_node_->get_logger(), "gripper: %s", m_gripper.c_str());
-    }
-    if (yaml_node["mobile"]) {
-        m_mobile = yaml_node["mobile"].as<std::string>();
-        RCLCPP_INFO(s_node_->get_logger(), "mobile: %s", m_mobile.c_str());
-    }
-    if (yaml_node["rt_host"]) {
-        m_rt_host = yaml_node["rt_host"].as<std::string>();
-        RCLCPP_INFO(s_node_->get_logger(), "rt_host: %s", m_rt_host.c_str());
-    }
-}
-
-
 namespace dsr_hardware2{
 
 
@@ -180,10 +115,32 @@ CallbackReturn DRHWInterface::on_init(const hardware_interface::HardwareInfo & i
         }
     }
 
-    // TODO(Song-ms, leeminju): This thread is present for parameter reading... 
-    //? Parameter concept is proper for hardware interface ? (Interface doesn't inherit node.
-    std::thread t(threadFunction);
-    t.join(); // need to make sure termination of the thread.
+    s_node_ = rclcpp::Node::make_shared("dsr_hw_interface2");
+
+    if (info.hardware_parameters.find("host") == info.hardware_parameters.end())
+    {
+      RCLCPP_ERROR(rclcpp::get_logger("dsr_hw_interface2"), "Missing parameter 'host'");
+      return hardware_interface::CallbackReturn::ERROR;
+    }
+    m_host = info.hardware_parameters.at("host");
+    if (info.hardware_parameters.find("port") == info.hardware_parameters.end())
+    {
+      RCLCPP_ERROR(rclcpp::get_logger("dsr_hw_interface2"), "Missing parameter 'port'");
+      return hardware_interface::CallbackReturn::ERROR;
+    }
+    m_port = std::stoi(info.hardware_parameters.at("port"));
+    if (info.hardware_parameters.find("mode") == info.hardware_parameters.end())
+    {
+      RCLCPP_ERROR(rclcpp::get_logger("dsr_hw_interface2"), "Missing parameter 'mode'");
+      return hardware_interface::CallbackReturn::ERROR;
+    }
+    m_mode = info.hardware_parameters.at("mode");
+    if (info.hardware_parameters.find("rt_host") == info.hardware_parameters.end())
+    {
+      RCLCPP_ERROR(rclcpp::get_logger("dsr_hw_interface2"), "Missing parameter 'rt_host'");
+      return hardware_interface::CallbackReturn::ERROR;
+    }
+    m_rt_host = info.hardware_parameters.at("rt_host");
 
 //-----------------------------------------------------------------------------------------------------
     RCLCPP_INFO(rclcpp::get_logger("dsr_hw_interface2"),"_______________________________________________\n");
