@@ -242,6 +242,63 @@
 				</geometry>
 			</visual>
 		</link>
+
+		<joint name="tool_exchanger_joint" type="fixed">
+			<parent link="link_6"/>
+			<child link="onrobot_tool_exchanger"/>
+			<origin xyz="0 0 0.050" rpy="0 0 0"/>
+		</joint>
+
+		<link name="onrobot_tool_exchanger">
+			<inertial>
+				<mass value="0.5"/>
+				<inertia ixx="0.5" ixy="0" ixz="0" iyy="0.5" iyz="0" izz="0.5" />
+			</inertial>
+			<visual>
+				<origin xyz="0 0 -0.025" rpy="0 0 0"/>
+				<geometry>
+				<cylinder radius="0.050" length="0.100"/>
+				</geometry>
+				<material name="Black">
+					<color rgba="0.0 0.0 0.0 1.0"/>
+				</material>
+			</visual>
+			<collision>
+				<origin xyz="0 0 -0.050" rpy="0 0 0"/>
+				<geometry>
+				<cylinder radius="0.050" length="0.100"/>
+				</geometry>
+			</collision>
+		</link>
+
+		<joint name="screwdriver_joint" type="fixed">
+			<parent link="onrobot_tool_exchanger"/>
+			<child link="screwdriver"/>
+			<origin xyz="0 -0.065 0" rpy="3.1416 0 3.1416"/>
+		</joint>
+
+		<link name="screwdriver">
+			<inertial>
+				<mass value="1.5"/>
+				<inertia ixx="0.5" ixy="0" ixz="0" iyy="0.5" iyz="0" izz="0.5" />
+			</inertial>
+			<visual>
+				<origin xyz="0 0 0" rpy="0 0 0"/>
+				<geometry>
+					<mesh filename="package://dsr_description2/meshes/screwdriver_simple.stl" scale="0.001 0.001 0.001"/>
+				</geometry>
+				<material name="Gray">
+					<color rgba="0.50 0.5 0.5 1.0"/>
+				</material>
+			</visual>
+			<collision>
+				<origin xyz="0 0 0" rpy="0 0 0"/>
+				<geometry>
+					<mesh filename="package://dsr_description2/meshes/screwdriver_simple.stl" scale="0.001 0.001 0.001"/>
+				</geometry>
+			</collision>
+		</link>
+
 		<xacro:dsr_transmission />
 		<xacro:dsr_gazebo namespace="${namespace}" />
 	</xacro:macro>
