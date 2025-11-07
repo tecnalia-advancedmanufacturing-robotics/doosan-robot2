@@ -299,6 +299,13 @@
 			</collision>
 		</link>
 
+    <link name="screwdriver_tcp"/>
+    <joint name="screwdriver_tcp_joint" type="fixed">
+      <parent link="screwdriver"/>
+      <child link="screwdriver_tcp"/>
+      <origin xyz="0 -0.084 -0.16" rpy="3.1416 0 0"/>
+    </joint>
+
 		<xacro:dsr_transmission />
 		<xacro:dsr_gazebo namespace="${namespace}" />
 	</xacro:macro>
